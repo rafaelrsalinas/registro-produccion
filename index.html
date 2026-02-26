@@ -958,10 +958,29 @@ function getFormData() {
   const trabajo = tipo === 'Trabajo' ? document.getElementById('selTrabajo').value : '';
   const tipoDescanso = tipo === 'Descanso' ? (document.querySelector('input[name="tipoDescanso"]:checked')?.value || '') : '';
   
+  // Calcular tiempo
+  const hi = document.getElementById('horaInicio').value;
+  const hf = document.getElementById('horaFin').value;
+  const [hiH, hiM] = hi.split(':').map(Number);
+  const [hfH, hfM] = hf.split(':').map(Number);
+  const totalMinInicio = hiH * 60 + hiM;
+  const totalMinFin = hfH * 60 + hfM;
+  const diffMin = totalMinFin - totalMinInicio;
+  const horas = Math.floor(diffMin / 60);
+  const mins = diffMin % 60;
+  const tiempo = `${horas}:${mins.toString().padStart(2, '0')}`;
+  const tiempoDecimales = parseFloat((diffMin / 60).toFixed(4));
+  
+  // Calcular productividad
+  const cantMontaje = parseInt(document.getElementById('cantidad').value) || 0;
+  const cantRotas = parseInt(document.getElementById('cantidadRotas').value) || 0;
+  const cantVal = cantMontaje || cantRotas;
+  const productividad = tiempoDecimales > 0 && cantVal > 0 ? parseFloat((cantVal / tiempoDecimales).toFixed(2)) : 0;
+
   const data = {
     fecha: document.getElementById('fecha').value,
-    horaInicio: document.getElementById('horaInicio').value,
-    horaFin: document.getElementById('horaFin').value,
+    horaInicio: hi,
+    horaFin: hf,
     operario: document.querySelector('input[name="operario"]:checked')?.value,
     tipoActividad: tipo,
     trabajo: tipo === 'Descanso' ? tipoDescanso : trabajo,
@@ -970,7 +989,10 @@ function getFormData() {
     cantidad: '',
     baseSaliente: '',
     baseEntrante: '',
-    horasExtra: document.querySelector('input[name="horasExtra"]:checked')?.value || 'No'
+    horasExtra: document.querySelector('input[name="horasExtra"]:checked')?.value || 'No',
+    tiempo: tiempo,
+    tiempoDecimales: tiempoDecimales.toString(),
+    productividad: productividad.toString()
   };
   
   if (trabajo === 'MONTAJE CAJAS') {
