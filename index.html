@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Análisis de Movimientos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface-hover: #222633;
+  --border: #2a2e3d;
+  --border-focus: #4f8cff;
+  --text: #e8eaf0;
+  --text-dim: #8b90a0;
+  --text-muted: #5c6070;
+  --accent: #4f8cff;
+  --accent-glow: rgba(79, 140, 255, 0.15);
+  --success: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.1);
+  --error: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.1);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.1);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px 16px 100px;
+}
+
+.header {
+  text-align: center;
+  padding: 28px 0 24px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #e8eaf0, #4f8cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header .subtitle {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+/* Section cards */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.section:focus-within {
+  border-color: var(--border-focus);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+/* Form fields */
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.field label .required {
+  color: var(--error);
+  margin-left: 2px;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="number"],
+input[type="text"],
+select {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  transition: all 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+input.error, select.error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px var(--error-bg);
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b90a0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Radio buttons */
+.radio-group {
+  display: flex;
+  gap: 8px;
+}
+
+.radio-option {
+  flex: 1;
+  position: relative;
+}
+
+.radio-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.radio-option label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 0;
+}
+
+.radio-option input:checked + label {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.radio-option label:active {
+  transform: scale(0.97);
+}
+
+/* Search dropdown */
+.search-select {
+  position: relative;
+}
+
+.search-select input {
+  width: 100%;
+  padding: 12px 14px;
+  padding-right: 36px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+}
+
+.search-select .clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 6px;
+  display: none;
+}
+
+.search-select.has-value .clear-btn { display: block; }
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.dropdown.open { display: block; }
+
+.dropdown-item {
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.1s;
+}
+
+.dropdown-item:hover, .dropdown-item.active {
+  background: var(--surface-hover);
+}
+
+.dropdown-item .match {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.dropdown-empty {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Validation messages */
+.field-error {
+  font-size: 12px;
+  color: var(--error);
+  margin-top: 4px;
+  display: none;
+}
+
+.field-error.visible { display: block; }
+
+.field-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Warning banner */
+.warning-banner {
+  background: var(--warning-bg);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--warning);
+  margin-bottom: 12px;
+  display: none;
+}
+
+.warning-banner.visible { display: flex; gap: 8px; align-items: center; }
+
+/* Submit button */
+.submit-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+  z-index: 50;
+}
+
+.submit-btn {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-btn:hover { filter: brightness(1.1); }
+.submit-btn:active { transform: scale(0.98); }
+.submit-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--success); color: #0f1117; }
+.toast.error { background: var(--error); color: #0f1117; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Hidden sections */
+.hidden { display: none !important; }
+
+/* Confirmation modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.modal h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.modal .summary {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.modal .summary strong {
+  color: var(--text);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-cancel {
+  background: var(--bg);
+  color: var(--text-dim);
+  border: 1px solid var(--border) !important;
+}
+
+.btn-confirm {
+  background: var(--accent);
+  color: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section { animation: fadeIn 0.3s ease-out; }
+.section:nth-child(2) { animation-delay: 0.05s; }
+.section:nth-child(3) { animation-delay: 0.1s; }
+.section:nth-child(4) { animation-delay: 0.15s; }
+
+/* Duplicate warning */
+.dup-warning {
+  background: var(--error-bg);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--error);
+  margin-top: 8px;
+  display: none;
+}
+
+.dup-warning.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="header">
+    <h1>Análisis de Movimientos</h1>
+    <div class="subtitle">Registro de producción</div>
+  </div>
+
+  <!-- FECHA Y HORA -->
+  <div class="section">
+    <div class="section-label">Fecha y hora</div>
+    <div class="field">
+      <label>Fecha <span class="required">*</span></label>
+      <input type="date" id="fecha" required>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <div class="field" style="flex:1">
+        <label>Hora Inicio <span class="required">*</span></label>
+        <input type="time" id="horaInicio" required>
+      </div>
+      <div class="field" style="flex:1">
+        <label>Hora Fin <span class="required">*</span></label>
+        <input type="time" id="horaFin" required>
+      </div>
+    </div>
+    <div class="field-error" id="errorHora">La hora fin debe ser posterior a la hora inicio</div>
+  </div>
+
+  <!-- OPERARIO -->
+  <div class="section">
+    <div class="section-label">Operario</div>
+    <div class="field">
+      <label>Operario <span class="required">*</span></label>
+      <div class="radio-group" style="flex-wrap:wrap;">
+        <div class="radio-option">
+          <input type="radio" name="operario" id="op_andres" value="Andrés">
+          <label for="op_andres">Andrés</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="operario" id="op_collins" value="Collins">
+          <label for="op_collins">Collins</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="operario" id="op_gerardo" value="Gerardo">
+          <label for="op_gerardo">Gerardo</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="operario" id="op_kofi" value="Kofi">
+          <label for="op_kofi">Kofi</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="operario" id="op_shiju" value="Shiju">
+          <label for="op_shiju">Shiju</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="operario" id="op_jesus" value="Jesús">
+          <label for="op_jesus">Jesús</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPO ACTIVIDAD -->
+  <div class="section">
+    <div class="section-label">Tipo de actividad</div>
+    <div class="field">
+      <label>¿Trabajo o Desayuno/Comida? <span class="required">*</span></label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" name="tipoActividad" id="tipo_trabajo" value="Trabajo" onchange="toggleSections()">
+          <label for="tipo_trabajo">🔧 Trabajo</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="tipoActividad" id="tipo_descanso" value="Descanso" onchange="toggleSections()">
+          <label for="tipo_descanso">☕ Desayuno/Comida</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESAYUNO/COMIDA (condicional) -->
+  <div class="section hidden" id="secDescanso">
+    <div class="section-label">Descanso</div>
+    <div class="field">
+      <label>Tipo <span class="required">*</span></label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" name="tipoDescanso" id="desc_desayuno" value="Desayuno">
+          <label for="desc_desayuno">Desayuno</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="tipoDescanso" id="desc_comida" value="Comida">
+          <label for="desc_comida">Comida</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRABAJO (condicional) -->
+  <div class="section hidden" id="secTrabajo">
+    <div class="section-label">Trabajo</div>
+    <div class="field">
+      <label>Máquina <span class="required">*</span></label>
+      <div class="radio-group" style="flex-wrap:wrap;">
+        <div class="radio-option" style="flex:0 0 calc(25% - 6px);">
+          <input type="radio" name="maquina" id="maq_1" value="1">
+          <label for="maq_1">1</label>
+        </div>
+        <div class="radio-option" style="flex:0 0 calc(25% - 6px);">
+          <input type="radio" name="maquina" id="maq_2" value="2">
+          <label for="maq_2">2</label>
+        </div>
+        <div class="radio-option" style="flex:0 0 calc(25% - 6px);">
+          <input type="radio" name="maquina" id="maq_3" value="3">
+          <label for="maq_3">3</label>
+        </div>
+        <div class="radio-option" style="flex:0 0 calc(25% - 6px);">
+          <input type="radio" name="maquina" id="maq_4" value="4">
+          <label for="maq_4">4</label>
+        </div>
+        <div class="radio-option" style="flex:0 0 calc(25% - 6px);">
+          <input type="radio" name="maquina" id="maq_5" value="5">
+          <label for="maq_5">5</label>
+        </div>
+        <div class="radio-option" style="flex:0 0 calc(25% - 6px);">
+          <input type="radio" name="maquina" id="maq_6" value="6">
+          <label for="maq_6">6</label>
+        </div>
+        <div class="radio-option" style="flex:0 0 calc(50% - 4px);">
+          <input type="radio" name="maquina" id="maq_alm" value="Almacen">
+          <label for="maq_alm">Almacén</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tipo de Trabajo <span class="required">*</span></label>
+      <select id="selTrabajo" onchange="toggleTrabajoFields()">
+        <option value="">— Selecciona —</option>
+        <option value="MONTAJE CAJAS">MONTAJE CAJAS</option>
+        <option value="CAMBIAR LA MAQ">CAMBIAR LA MAQ</option>
+        <option value="LIMPIAR Y 5S">LIMPIAR Y 5S</option>
+        <option value="CAJAS ROTAS">CAJAS ROTAS</option>
+        <option value="AVERIA MAQ.">AVERÍA MAQ.</option>
+        <option value="ORDENAR PLASTICOS Y FLEJE">ORDENAR PLÁSTICOS Y FLEJE</option>
+        <option value="REUNION">REUNIÓN</option>
+        <option value="ADMINISTRACIÓN">ADMINISTRACIÓN</option>
+        <option value="OTROS">OTROS</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MONTAJE CAJAS (condicional) -->
+  <div class="section hidden" id="secMontaje">
+    <div class="section-label">Montaje de cajas</div>
+    <div class="field">
+      <label>Medida de caja <span class="required">*</span></label>
+      <div class="search-select" id="searchElemento">
+        <input type="text" id="inputElemento" placeholder="Buscar medida (ej: 40x30)" autocomplete="off" onfocus="openDropdown('elemento')" oninput="filterDropdown('elemento')">
+        <button class="clear-btn" onclick="clearSearch('elemento')">&times;</button>
+        <div class="dropdown" id="dropElemento"></div>
+      </div>
+      <div class="field-hint">Escribe para filtrar. Ej: 40x30, 60x40, 485</div>
+      <div class="field-error" id="errorElemento">Selecciona una medida de la lista</div>
+    </div>
+    <div class="field">
+      <label>Cantidad de cajas <span class="required">*</span></label>
+      <input type="number" id="cantidad" min="1" step="1" placeholder="Ej: 500" inputmode="numeric">
+      <div class="field-error" id="errorCantidad">Introduce un número mayor que 0</div>
+    </div>
+  </div>
+
+  <!-- CAMBIAR MAQUINA (condicional) -->
+  <div class="section hidden" id="secCambiar">
+    <div class="section-label">Cambio de máquina</div>
+    <div class="field">
+      <label>Base Saliente <span class="required">*</span></label>
+      <div class="search-select" id="searchSaliente">
+        <input type="text" id="inputSaliente" placeholder="Buscar medida saliente" autocomplete="off" onfocus="openDropdown('saliente')" oninput="filterDropdown('saliente')">
+        <button class="clear-btn" onclick="clearSearch('saliente')">&times;</button>
+        <div class="dropdown" id="dropSaliente"></div>
+      </div>
+      <div class="field-error" id="errorSaliente">Selecciona una medida de la lista</div>
+    </div>
+    <div class="field">
+      <label>Base Entrante <span class="required">*</span></label>
+      <div class="search-select" id="searchEntrante">
+        <input type="text" id="inputEntrante" placeholder="Buscar medida entrante" autocomplete="off" onfocus="openDropdown('entrante')" oninput="filterDropdown('entrante')">
+        <button class="clear-btn" onclick="clearSearch('entrante')">&times;</button>
+        <div class="dropdown" id="dropEntrante"></div>
+      </div>
+      <div class="field-error" id="errorEntrante">Selecciona una medida de la lista</div>
+    </div>
+    <div class="warning-banner" id="warnBasesIguales">
+      ⚠️ Base Saliente y Entrante son iguales. ¿Es correcto?
+    </div>
+  </div>
+
+  <!-- CAJAS ROTAS (condicional) -->
+  <div class="section hidden" id="secCajasRotas">
+    <div class="section-label">Cajas rotas</div>
+    <div class="field">
+      <label>Medida de caja <span class="required">*</span></label>
+      <div class="search-select" id="searchRotas">
+        <input type="text" id="inputRotas" placeholder="Buscar medida" autocomplete="off" onfocus="openDropdown('rotas')" oninput="filterDropdown('rotas')">
+        <button class="clear-btn" onclick="clearSearch('rotas')">&times;</button>
+        <div class="dropdown" id="dropRotas"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Cantidad <span class="required">*</span></label>
+      <input type="number" id="cantidadRotas" min="1" step="1" placeholder="Ej: 50" inputmode="numeric">
+    </div>
+  </div>
+
+  <!-- HORAS EXTRA -->
+  <div class="section">
+    <div class="section-label">Horas extra</div>
+    <div class="field">
+      <label>¿Son horas extra? <span class="required">*</span></label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" name="horasExtra" id="he_si" value="Si">
+          <label for="he_si">Sí</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" name="horasExtra" id="he_no" value="No" checked>
+          <label for="he_no">No</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dup-warning" id="dupWarning">
+    ⚠️ Ya existe un registro similar para este operario, fecha y horario. ¿Seguro que quieres enviarlo?
+  </div>
+</div>
+
+<!-- Submit area -->
+<div class="submit-area">
+  <button class="submit-btn" id="btnSubmit" onclick="handleSubmit()">Enviar Registro</button>
+</div>
+
+<!-- Confirmation modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Confirmar envío</h3>
+    <div class="summary" id="modalSummary"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmSubmit()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA: Lista maestra de elementos normalizados
+// ============================================================
+const ELEMENTOS = [
+  "30x20x8,5","30x20x8,5 T","30x20x9,2","30x20x10,5","30x20x10,5 C",
+  "30x20x11,5","30x20x11,5 T","30x20x12,5",
+  "30x33x27","33x30x27",
+  "40x30x6","40x30x6 T","40x30x7","40x30x7 T",
+  "40x30x8","40x30x8 T","40x30x8 CO","40x30x8,5","40x30x8,5 T",
+  "40x30x9","40x30x9 C","40x30x9 T",
+  "40x30x9,2","40x30x9,2 T",
+  "40x30x9,5","40x30x9,5 C","40x30x9,5 T",
+  "40x30x9,7","40x30x9,7 C","40x30x9,7 CO","40x30x9,7 T",
+  "40x30x10","40x30x10 C","40x30x10 T","40x30x10,5",
+  "40x30x11","40x30x11 C","40x30x11 T",
+  "40x30x12","40x30x12 C","40x30x12 T",
+  "40x30x12,3","40x30x12,3 C","40x30x12,5",
+  "40x30x13,8","40x30x13,8 C",
+  "40x30x14","40x30x14 C","40x30x14 T",
+  "40x30x14,2","40x30x14,2 C",
+  "40x30x14,5","40x30x14,5 C","40x30x14,5 T",
+  "40x30x15","40x30x15 C","40x30x15 T","40x30x15,5",
+  "40x30x16","40x30x16 C","40x30x16,5","40x30x16,5 T",
+  "40x30x18","40x30x18 C","40x30x18,5",
+  "40x30x19",
+  "40x30x20","40x30x20 C","40x30x20 T",
+  "40x30x20,3","40x30x20,3 C","40x30x20,3 T",
+  "40x30x20,5","40x30x20,5 C","40x30x20,5 T",
+  "40x30x21","40x30x21 T","40x30x23","40x30x23 T",
+  "485x355x14,5","485x355x14,5 C","485x355x145","485x355x145 C",
+  "485x365x12","485x365x120","485x365x14,5",
+  "50x30x9,8","50x30x9,8 C",
+  "50x30x11","50x30x11 T","50x30x12","50x30x12 C","50x30x12 T",
+  "50x30x14,5","50x30x14,5 T","50x30x15","50x30x15 T",
+  "50x30x18","50x30x20","50x30x25","50x30x25,5","50x30x25,5 T",
+  "50x33x18,5","50x33x20","50x33x20 T","50x33x25,5 T",
+  "60x30x9,5","60x30x10",
+  "60x40x9","60x40x9 C","60x40x9 T",
+  "60x40x9,5","60x40x9,5 C","60x40x9,5 T",
+  "60x40x9,7","60x40x9,7 C","60x40x9,7 T",
+  "60x40x10","60x40x10 C","60x40x10 T",
+  "60x40x11","60x40x11 C","60x40x11 T",
+  "60x40x12","60x40x12 C",
+  "60x40x14","60x40x14 C",
+  "60x40x15","60x40x15 T","60x40x16",
+  "60x40x17","60x40x17,5","60x40x17,5 T",
+  "60x40x18","60x40x18 GO","60x40x20","60x40x22","60x40x23"
+];
+
+// ============================================================
+// DROPDOWN LOGIC
+// ============================================================
+const dropdownState = {
+  elemento: { selected: '', items: ELEMENTOS },
+  saliente: { selected: '', items: ELEMENTOS },
+  entrante: { selected: '', items: ELEMENTOS },
+  rotas:    { selected: '', items: ELEMENTOS }
+};
+
+function openDropdown(type) {
+  // Close all other dropdowns
+  ['elemento','saliente','entrante','rotas'].forEach(t => {
+    if (t !== type) document.getElementById('drop' + capitalize(t)).classList.remove('open');
+  });
+  filterDropdown(type);
+  document.getElementById('drop' + capitalize(type)).classList.add('open');
+}
+
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function filterDropdown(type) {
+  const input = document.getElementById('input' + capitalize(type));
+  const dropdown = document.getElementById('drop' + capitalize(type));
+  const query = input.value.toLowerCase().trim();
+  const container = document.getElementById('search' + capitalize(type));
+  
+  let items = ELEMENTOS;
+  if (query) {
+    items = ELEMENTOS.filter(e => e.toLowerCase().includes(query));
+  }
+  
+  if (items.length === 0) {
+    dropdown.innerHTML = '<div class="dropdown-empty">No se encontró ninguna medida</div>';
+  } else {
+    dropdown.innerHTML = items.map(item => {
+      let display = item;
+      if (query) {
+        const idx = item.toLowerCase().indexOf(query);
+        if (idx >= 0) {
+          display = item.substring(0, idx) + 
+                    '<span class="match">' + item.substring(idx, idx + query.length) + '</span>' + 
+                    item.substring(idx + query.length);
+        }
+      }
+      return `<div class="dropdown-item" onmousedown="selectItem('${type}', '${item}')">${display}</div>`;
+    }).join('');
+  }
+  
+  container.classList.toggle('has-value', input.value.length > 0);
+  dropdown.classList.add('open');
+}
+
+function selectItem(type, value) {
+  const input = document.getElementById('input' + capitalize(type));
+  const dropdown = document.getElementById('drop' + capitalize(type));
+  const container = document.getElementById('search' + capitalize(type));
+  
+  input.value = value;
+  dropdownState[type].selected = value;
+  dropdown.classList.remove('open');
+  container.classList.add('has-value');
+  
+  // Check bases iguales
+  if (type === 'saliente' || type === 'entrante') {
+    checkBasesIguales();
+  }
+}
+
+function clearSearch(type) {
+  const input = document.getElementById('input' + capitalize(type));
+  const container = document.getElementById('search' + capitalize(type));
+  input.value = '';
+  dropdownState[type].selected = '';
+  container.classList.remove('has-value');
+  input.focus();
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-select')) {
+    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+// ============================================================
+// CONDITIONAL SECTIONS
+// ============================================================
+function toggleSections() {
+  const tipo = document.querySelector('input[name="tipoActividad"]:checked')?.value;
+  
+  document.getElementById('secTrabajo').classList.toggle('hidden', tipo !== 'Trabajo');
+  document.getElementById('secDescanso').classList.toggle('hidden', tipo !== 'Descanso');
+  
+  if (tipo !== 'Trabajo') {
+    document.getElementById('secMontaje').classList.add('hidden');
+    document.getElementById('secCambiar').classList.add('hidden');
+    document.getElementById('secCajasRotas').classList.add('hidden');
+  }
+}
+
+function toggleTrabajoFields() {
+  const trabajo = document.getElementById('selTrabajo').value;
+  
+  document.getElementById('secMontaje').classList.toggle('hidden', trabajo !== 'MONTAJE CAJAS');
+  document.getElementById('secCambiar').classList.toggle('hidden', trabajo !== 'CAMBIAR LA MAQ');
+  document.getElementById('secCajasRotas').classList.toggle('hidden', trabajo !== 'CAJAS ROTAS');
+}
+
+function checkBasesIguales() {
+  const sal = dropdownState.saliente.selected;
+  const ent = dropdownState.entrante.selected;
+  const warn = document.getElementById('warnBasesIguales');
+  warn.classList.toggle('visible', sal && ent && sal === ent);
+}
+
+// ============================================================
+// VALIDATION
+// ============================================================
+function validate() {
+  let errors = [];
+  
+  // Basic fields
+  if (!document.getElementById('fecha').value) errors.push('Fecha requerida');
+  if (!document.getElementById('horaInicio').value) errors.push('Hora inicio requerida');
+  if (!document.getElementById('horaFin').value) errors.push('Hora fin requerida');
+  
+  // Hora fin > hora inicio
+  const hi = document.getElementById('horaInicio').value;
+  const hf = document.getElementById('horaFin').value;
+  if (hi && hf && hf <= hi) {
+    errors.push('Hora fin debe ser posterior a hora inicio');
+    document.getElementById('errorHora').classList.add('visible');
+  } else {
+    document.getElementById('errorHora').classList.remove('visible');
+  }
+  
+  if (!document.querySelector('input[name="operario"]:checked')) errors.push('Operario requerido');
+  if (!document.querySelector('input[name="tipoActividad"]:checked')) errors.push('Tipo de actividad requerido');
+  
+  const tipo = document.querySelector('input[name="tipoActividad"]:checked')?.value;
+  
+  if (tipo === 'Descanso') {
+    if (!document.querySelector('input[name="tipoDescanso"]:checked')) errors.push('Selecciona Desayuno o Comida');
+  }
+  
+  if (tipo === 'Trabajo') {
+    if (!document.querySelector('input[name="maquina"]:checked')) errors.push('Máquina requerida');
+    if (!document.getElementById('selTrabajo').value) errors.push('Tipo de trabajo requerido');
+    
+    const trabajo = document.getElementById('selTrabajo').value;
+    
+    if (trabajo === 'MONTAJE CAJAS') {
+      if (!dropdownState.elemento.selected) {
+        errors.push('Medida de caja requerida');
+        document.getElementById('errorElemento').classList.add('visible');
+      } else {
+        document.getElementById('errorElemento').classList.remove('visible');
+      }
+      
+      const cant = document.getElementById('cantidad').value;
+      if (!cant || parseInt(cant) <= 0) {
+        errors.push('Cantidad requerida');
+        document.getElementById('errorCantidad').classList.add('visible');
+      } else {
+        document.getElementById('errorCantidad').classList.remove('visible');
+      }
+    }
+    
+    if (trabajo === 'CAMBIAR LA MAQ') {
+      if (!dropdownState.saliente.selected) errors.push('Base saliente requerida');
+      if (!dropdownState.entrante.selected) errors.push('Base entrante requerida');
+    }
+    
+    if (trabajo === 'CAJAS ROTAS') {
+      if (!dropdownState.rotas.selected) errors.push('Medida de caja rota requerida');
+      const cantR = document.getElementById('cantidadRotas').value;
+      if (!cantR || parseInt(cantR) <= 0) errors.push('Cantidad de cajas rotas requerida');
+    }
+  }
+  
+  if (!document.querySelector('input[name="horasExtra"]:checked')) errors.push('Indica si son horas extra');
+  
+  return errors;
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+function handleSubmit() {
+  const errors = validate();
+  
+  if (errors.length > 0) {
+    showToast(errors[0], 'error');
+    return;
+  }
+  
+  // Build summary and show modal
+  showConfirmModal();
+}
+
+function getFormData() {
+  const tipo = document.querySelector('input[name="tipoActividad"]:checked')?.value;
+  const trabajo = tipo === 'Trabajo' ? document.getElementById('selTrabajo').value : '';
+  const tipoDescanso = tipo === 'Descanso' ? (document.querySelector('input[name="tipoDescanso"]:checked')?.value || '') : '';
+  
+  const data = {
+    fecha: document.getElementById('fecha').value,
+    horaInicio: document.getElementById('horaInicio').value,
+    horaFin: document.getElementById('horaFin').value,
+    operario: document.querySelector('input[name="operario"]:checked')?.value,
+    tipoActividad: tipo,
+    trabajo: tipo === 'Descanso' ? tipoDescanso : trabajo,
+    maquina: tipo === 'Trabajo' ? (document.querySelector('input[name="maquina"]:checked')?.value || '') : '',
+    elemento: '',
+    cantidad: '',
+    baseSaliente: '',
+    baseEntrante: '',
+    horasExtra: document.querySelector('input[name="horasExtra"]:checked')?.value || 'No'
+  };
+  
+  if (trabajo === 'MONTAJE CAJAS') {
+    data.elemento = dropdownState.elemento.selected;
+    data.cantidad = document.getElementById('cantidad').value;
+  } else if (trabajo === 'CAMBIAR LA MAQ') {
+    data.baseSaliente = dropdownState.saliente.selected;
+    data.baseEntrante = dropdownState.entrante.selected;
+  } else if (trabajo === 'CAJAS ROTAS') {
+    data.elemento = dropdownState.rotas.selected;
+    data.cantidad = document.getElementById('cantidadRotas').value;
+  }
+  
+  return data;
+}
+
+function showConfirmModal() {
+  const data = getFormData();
+  const fecha = new Date(data.fecha).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+  
+  let summary = `<strong>Fecha:</strong> ${fecha}<br>`;
+  summary += `<strong>Horario:</strong> ${data.horaInicio} - ${data.horaFin}<br>`;
+  summary += `<strong>Operario:</strong> ${data.operario}<br>`;
+  summary += `<strong>Trabajo:</strong> ${data.trabajo}<br>`;
+  
+  if (data.maquina) summary += `<strong>Máquina:</strong> ${data.maquina}<br>`;
+  if (data.elemento) summary += `<strong>Elemento:</strong> ${data.elemento}<br>`;
+  if (data.cantidad) summary += `<strong>Cantidad:</strong> ${data.cantidad}<br>`;
+  if (data.baseSaliente) summary += `<strong>Base Saliente:</strong> ${data.baseSaliente}<br>`;
+  if (data.baseEntrante) summary += `<strong>Base Entrante:</strong> ${data.baseEntrante}<br>`;
+  summary += `<strong>Horas Extra:</strong> ${data.horasExtra}`;
+  
+  document.getElementById('modalSummary').innerHTML = summary;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+async function confirmSubmit() {
+  closeModal();
+  const data = getFormData();
+  const btn = document.getElementById('btnSubmit');
+  
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  
+  // ============================================================
+  // WEBHOOK URL: Reemplaza esta URL con tu webhook de Power Automate
+  // ============================================================
+  const WEBHOOK_URL = 'TU_WEBHOOK_URL_AQUI';
+  
+  try {
+    if (WEBHOOK_URL === 'TU_WEBHOOK_URL_AQUI') {
+      // Demo mode: simular envío
+      await new Promise(r => setTimeout(r, 800));
+      showToast('✓ Registro guardado correctamente', 'success');
+      console.log('Datos enviados:', JSON.stringify(data, null, 2));
+      resetForm();
+    } else {
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (response.ok) {
+        showToast('✓ Registro guardado correctamente', 'success');
+        resetForm();
+      } else {
+        throw new Error('Error del servidor');
+      }
+    }
+  } catch (err) {
+    showToast('Error al enviar. Inténtalo de nuevo.', 'error');
+    console.error(err);
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Enviar Registro';
+}
+
+function resetForm() {
+  // Reset all fields
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  document.getElementById('horaInicio').value = '';
+  document.getElementById('horaFin').value = '';
+  
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.getElementById('he_no').checked = true;
+  
+  document.getElementById('selTrabajo').value = '';
+  document.getElementById('cantidad').value = '';
+  document.getElementById('cantidadRotas').value = '';
+  
+  // Reset search fields
+  ['elemento','saliente','entrante','rotas'].forEach(type => {
+    clearSearch(type);
+  });
+  
+  // Hide conditional sections
+  document.getElementById('secTrabajo').classList.add('hidden');
+  document.getElementById('secDescanso').classList.add('hidden');
+  document.getElementById('secMontaje').classList.add('hidden');
+  document.getElementById('secCambiar').classList.add('hidden');
+  document.getElementById('secCajasRotas').classList.add('hidden');
+  
+  // Hide warnings
+  document.getElementById('warnBasesIguales').classList.remove('visible');
+  document.getElementById('errorHora').classList.remove('visible');
+  
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.className = `toast ${type}`;
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Set today's date
+  document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+  
+  // Default horas extra = No
+  document.getElementById('he_no').checked = true;
+});
+</script>
+
+</body>
+</html>
