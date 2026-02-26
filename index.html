@@ -1022,10 +1022,10 @@ async function confirmSubmit() {
   // ============================================================
   // WEBHOOK URL: Reemplaza esta URL con tu webhook de Power Automate
   // ============================================================
-  const WEBHOOK_URL = 'TU_WEBHOOK_URL_AQUI';
+  const WEBHOOK_URL = 'https://default4219abae8d5243a1b52a7bb8c1c61d.0d.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/4e2a26915e2048d383cc23be72ddae34/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=GaScpqXdwdLO-PEJIiDoJF8dwaO8vX92QwOq-Nqr45o';
   
   try {
-    if (WEBHOOK_URL === 'TU_WEBHOOK_URL_AQUI') {
+    if (WEBHOOK_URL === 'DEMO_MODE') {
       // Demo mode: simular envío
       await new Promise(r => setTimeout(r, 800));
       showToast('✓ Registro guardado correctamente', 'success');
